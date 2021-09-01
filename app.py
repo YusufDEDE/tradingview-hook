@@ -1,5 +1,8 @@
 from flask import Flask, request, redirect, jsonify
 from datetime import datetime
+from etc.base_definitions import *
+
+from utils.send_telegram import telegram_signal_send
 
 app = Flask(__name__)
 
@@ -18,6 +21,12 @@ def homepage():
 @app.route('/webhook', methods=['GET', 'POST'])
 def webhook():
     data = request.stream.read().decode('UTF-8')
+
+    telegram_signal_send(
+        chat_id=TELEGRAM_CHAT_ID,
+        api_key=TELEGRAM_API_KEY,
+        text=data
+    )
 
     return f"data -> {data}"
 
