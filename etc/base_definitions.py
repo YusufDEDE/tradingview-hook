@@ -11,3 +11,7 @@ CELERY_BROKER = environ.get('REDIS_URL')
 CELERY_BACKEND = environ.get('REDIS_URL')
 
 CELERY_NAME = environ.get('CELERY_NAME', 'default_name')
+
+DEBUG = environ.get('DEBUG')
+HOST = environ.get('HOST')
+PORT = environ.get('PORT')
