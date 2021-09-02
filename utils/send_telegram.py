@@ -7,4 +7,6 @@ def telegram_signal_send(chat_id, text, api_key):
         'chat_id': chat_id,
         'text': text
     }
-    requests.post(url, data=data)
+    req = requests.post(url, data=data)
+
+    print(req.content)

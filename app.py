@@ -1,10 +1,14 @@
-from flask import Flask, request, redirect, jsonify
+from celery import Celery
 from datetime import datetime
 from etc.base_definitions import *
+from flask import Flask, request
+from flask_cors import CORS
 
-from utils.send_telegram import telegram_signal_send
 
 app = Flask(__name__)
+CORS(app)
+
+celery = Celery(CELERY_NAME, broker=CELERY_BROKER, backend=CELERY_BACKEND)
 
 
 @app.route('/')
@@ -22,10 +26,14 @@ def homepage():
 def webhook():
     data = request.stream.read().decode('UTF-8')
 
-    telegram_signal_send(
-        chat_id=TELEGRAM_CHAT_ID,
-        api_key=TELEGRAM_API_KEY,
-        text=data
+    task_args = {
+        'text': data,
+        'api_key': TELEGRAM_API_KEY,
+        'chat_id': TELEGRAM_CHAT_ID
+    }
+
+    celery.send_task(
+        'celery_worker.send_telegram', args=[task_args]
     )
 
     return f"data -> {data}"
